@@ -7,6 +7,7 @@ import {
 } from "drizzle-orm/pg-core";
 import type { AdapterAccount } from "@auth/core/adapters";
 import { sql } from "drizzle-orm";
+import { createSelectSchema } from "drizzle-zod";
 
 const authTable = pgTableCreator((name) => `auth_${name}`);
 
@@ -76,3 +77,15 @@ export const verificationTokens = authTable(
 
 export type VerificationToken = typeof verificationTokens.$inferSelect;
 export type NewVerificationToken = typeof verificationTokens.$inferInsert;
+
+export const clientCredentials = authTable("client_credentials", {
+  clientId: text("client_id")
+    .notNull()
+    .references(() => users.id)
+    .primaryKey(),
+  clientSecret: text("client_secret").notNull(),
+});
+
+export type ClientCredentials = typeof clientCredentials.$inferSelect;
+export type NewClientCredentials = typeof clientCredentials.$inferInsert;
+export const clientCredentialsSchema = createSelectSchema(clientCredentials);

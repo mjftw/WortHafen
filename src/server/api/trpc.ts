@@ -6,8 +6,9 @@ import { ZodError } from "zod";
 import type { OpenApiMeta } from "trpc-openapi";
 
 import { getServerAuthSession } from "~/server/auth";
-import { getDb } from "~/server/db";
+import { Database, getDb } from "~/server/db";
 import { decodeJWT } from "~/server/api/apiAuth";
+import { NextApiRequest } from "next";
 
 /**
  * 1. CONTEXT
@@ -19,6 +20,7 @@ import { decodeJWT } from "~/server/api/apiAuth";
 
 interface CreateContextOptions {
   session: Session | null;
+  db: Database;
 }
 
 /**
@@ -32,10 +34,9 @@ interface CreateContextOptions {
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
 const createInnerTRPCContext = async (opts: CreateContextOptions) => {
-  const db = await getDb();
   return {
     session: opts.session,
-    db,
+    db: opts.db,
   };
 };
 
@@ -44,23 +45,34 @@ async function buildUserSession(opts: CreateNextContextOptions) {
 }
 
 async function buildApiSession(
-  opts: CreateNextContextOptions,
+  req: NextApiRequest,
+  db: Database,
 ): Promise<Session | null> {
-  const { req } = opts;
   const token = req.headers.authorization?.replace("Bearer ", "");
 
   if (!token) {
+    console.debug("No authorization header");
     return null;
   }
 
   const apiSession = decodeJWT(token);
 
   if (!apiSession) {
+    console.debug("Failed to decode JWT");
+    return null;
+  }
+
+  const user = await db.query.users.findFirst({
+    where: (users, { eq }) => eq(users.id, apiSession.user.clientId),
+  });
+
+  if (!user) {
+    console.debug("User not found");
     return null;
   }
 
   return {
-    user: apiSession.user,
+    user,
     expires: apiSession.expires,
   };
 }
@@ -73,14 +85,15 @@ async function buildApiSession(
  */
 export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   const { req, res } = opts;
+  const db = await getDb();
 
   // Get the session from the server using the getServerSession wrapper function
   const session =
-    (await buildUserSession({ req, res })) ??
-    (await buildApiSession({ req, res }));
+    (await buildUserSession({ req, res })) ?? (await buildApiSession(req, db));
 
   return createInnerTRPCContext({
     session,
+    db,
   });
 };
 

@@ -19,11 +19,9 @@ import type { APIUser } from "~/server/api/apiAuth";
  */
 declare module "next-auth" {
   interface Session extends DefaultSession {
-    user:
-      | ({
-          id: string;
-        } & DefaultSession["user"])
-      | APIUser;
+    user: {
+      id: string;
+    } & DefaultSession["user"];
   }
 
   // interface User {

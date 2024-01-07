@@ -49,12 +49,13 @@ export const dictionaryRouter = createTRPCRouter({
 
       return { found };
     }),
-  create: publicProcedure
+  create: protectedProcedure
     .meta({
       openapi: {
         method: "POST",
         path: "/word",
         tags: ["Dictionary"],
+        protect: true,
       },
     })
     .input(newWordSchema.omit({ addedByUserId: true }))
@@ -66,6 +67,7 @@ export const dictionaryRouter = createTRPCRouter({
           inGerman: input.inGerman,
           inEnglish: input.inEnglish,
           exampleUsage: input.exampleUsage,
+          addedByUserId: ctx.session.user.id as string | undefined,
         })
         .returning();
 

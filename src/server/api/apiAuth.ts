@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import type { ISODateString } from "next-auth";
+import { randomBytes } from "crypto";
 import { z } from "zod";
 import { env } from "~/env";
 
@@ -43,4 +44,8 @@ export function decodeJWT(token: string): APISession | null {
     console.error("Failed to verify and decode JWT", err);
     return null;
   }
+}
+
+export function newClientSecret(length = 48) {
+  return randomBytes(length).toString("hex");
 }
