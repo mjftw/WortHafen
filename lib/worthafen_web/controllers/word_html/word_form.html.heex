@@ -1,0 +1,11 @@
+<.simple_form :let={f} for={@changeset} action={@action}>
+  <.error :if={@changeset.action}>
+    Oops, something went wrong! Please check the errors below.
+  </.error>
+  <.input field={f[:in_german]} type="text" label="In german" />
+  <.input field={f[:in_english]} type="text" label="In english" />
+  <.input field={f[:example_usage]} type="text" label="Example usage" />
+  <:actions>
+    <.button>Save Word</.button>
+  </:actions>
+</.simple_form>
