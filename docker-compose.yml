@@ -9,14 +9,14 @@ services:
     environment:
       POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
-      POSTGRES_DATABASE: worthafer-dev
+      POSTGRES_DATABASE: worthafen-dev
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
       interval: 1s
       timeout: 5s
       retries: 20
     volumes:
-      - worthafer-postgres:/var/lib/postgresql/data
+      - worthafen-postgres:/var/lib/postgresql/data
 
 volumes:
-  worthafer-postgres:
+  worthafen-postgres:

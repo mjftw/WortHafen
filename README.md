@@ -1,4 +1,4 @@
-# WortHafer
+# WortHafen
 
 To start your Phoenix server:
 

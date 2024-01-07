@@ -7,21 +7,21 @@
 # General application configuration
 import Config
 
-config :worthafer,
-  namespace: WortHafer,
-  ecto_repos: [WortHafer.Repo],
+config :worthafen,
+  namespace: WortHafen,
+  ecto_repos: [WortHafen.Repo],
   generators: [timestamp_type: :utc_datetime]
 
 # Configures the endpoint
-config :worthafer, WortHaferWeb.Endpoint,
+config :worthafen, WortHafenWeb.Endpoint,
   url: [host: "localhost"],
   adapter: Bandit.PhoenixAdapter,
   render_errors: [
-    formats: [html: WortHaferWeb.ErrorHTML, json: WortHaferWeb.ErrorJSON],
+    formats: [html: WortHafenWeb.ErrorHTML, json: WortHafenWeb.ErrorJSON],
     layout: false
   ],
-  pubsub_server: WortHafer.PubSub,
-  live_view: [signing_salt: "h0gh0Etx"]
+  pubsub_server: WortHafen.PubSub,
+  live_view: [signing_salt: "nul0M7rl"]
 
 # Configures the mailer
 #
@@ -30,7 +30,7 @@ config :worthafer, WortHaferWeb.Endpoint,
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
-config :worthafer, WortHafer.Mailer, adapter: Swoosh.Adapters.Local
+config :worthafen, WortHafen.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configure esbuild (the version is required)
 config :esbuild,

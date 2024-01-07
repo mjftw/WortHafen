@@ -8,23 +8,23 @@ config :bcrypt_elixir, :log_rounds, 1
 # The MIX_TEST_PARTITION environment variable can be used
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
-config :worthafer, WortHafer.Repo,
+config :worthafen, WortHafen.Repo,
   username: "postgres",
   password: "postgres",
   hostname: "localhost",
-  database: "worthafer_test#{System.get_env("MIX_TEST_PARTITION")}",
+  database: "worthafen_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: 10
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
-config :worthafer, WortHaferWeb.Endpoint,
+config :worthafen, WortHafenWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
-  secret_key_base: "y18u4o/5yZ+SCarP2Xicn+S4qZhs1OPIY8OXeSyxUlUjDBPVzsdcvA9nmlWux6qc",
+  secret_key_base: "t4THgvvkP8CCTzNqyp+hUC5UTlp4VlQyqA5LpDHCjUTL79gF8pHqX7knI5ZxT8UP",
   server: false
 
 # In test we don't send emails.
-config :worthafer, WortHafer.Mailer, adapter: Swoosh.Adapters.Test
+config :worthafen, WortHafen.Mailer, adapter: Swoosh.Adapters.Test
 
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false

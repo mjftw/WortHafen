@@ -1,7 +1,7 @@
-defmodule WortHafer.AccountsFixtures do
+defmodule WortHafen.AccountsFixtures do
   @moduledoc """
   This module defines test helpers for creating
-  entities via the `WortHafer.Accounts` context.
+  entities via the `WortHafen.Accounts` context.
   """
 
   def unique_user_email, do: "user#{System.unique_integer()}@example.com"
@@ -18,7 +18,7 @@ defmodule WortHafer.AccountsFixtures do
     {:ok, user} =
       attrs
       |> valid_user_attributes()
-      |> WortHafer.Accounts.register_user()
+      |> WortHafen.Accounts.register_user()
 
     user
   end
