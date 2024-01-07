@@ -9,7 +9,14 @@ import { posts } from "~/server/db/schema";
 
 export const postRouter = createTRPCRouter({
   hello: publicProcedure
+    .meta({
+      openapi: {
+        method: "GET",
+        path: "/hello",
+      },
+    })
     .input(z.object({ text: z.string() }))
+    .output(z.object({ greeting: z.string() }))
     .query(({ input }) => {
       return {
         greeting: `Hello ${input.text}`,
@@ -17,15 +24,30 @@ export const postRouter = createTRPCRouter({
     }),
 
   create: protectedProcedure
+    .meta({
+      openapi: {
+        method: "POST",
+        path: "/post",
+      },
+    })
     .input(z.object({ name: z.string().min(1) }))
+    .output(z.object({ id: z.number() }))
     .mutation(async ({ ctx, input }) => {
-      // simulate a slow db call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const [post] = await ctx.db
+        .insert(posts)
+        .values({
+          name: input.name,
+          createdByUserId: ctx.session.user.id,
+        })
+        .returning();
 
-      await ctx.db.insert(posts).values({
-        name: input.name,
-        createdByUserId: ctx.session.user.id,
-      });
+      if (!post) {
+        throw new Error("Failed to create post");
+      }
+
+      return {
+        id: post.id,
+      };
     }),
 
   getLatest: publicProcedure.query(({ ctx }) => {

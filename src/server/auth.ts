@@ -1,4 +1,4 @@
-import { GetServerSidePropsContext } from "next";
+import { type GetServerSidePropsContext } from "next";
 import {
   getServerSession,
   type DefaultSession,
@@ -72,7 +72,6 @@ export async function authOptions(db: Database): Promise<NextAuthOptions> {
     ],
   };
 }
-
 
 /**
  * Wrapper for `getServerSession` so that you don't need to import the `authOptions` in every file.
