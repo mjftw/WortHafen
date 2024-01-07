@@ -3,5 +3,8 @@
     "deploymentEnabled": {
       "*": false
     }
+  },
+  "github": {
+    "enabled": false
   }
 }
