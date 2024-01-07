@@ -5,7 +5,7 @@ config :worthafen, WortHafen.Repo,
   username: "postgres",
   password: "postgres",
   hostname: "localhost",
-  database: "worthafen_dev",
+  database: "worthafen-dev",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
