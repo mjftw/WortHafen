@@ -10,7 +10,26 @@ on:
       - main
 
 jobs:
+  Check-Drizzle-Changes:
+    runs-on: ubuntu-latest
+    outputs:
+      changes: ${{ steps.set-output.outputs.changes }}
+    steps:
+      - uses: actions/checkout@v2
+      - id: set-output
+        run: |
+          echo "Checking for changes in the 'drizzle' directory..."
+          if git diff --quiet HEAD^ HEAD -- drizzle; then
+            echo "No changes in 'drizzle' directory."
+            echo "::set-output name=changes::false"
+          else
+            echo "Changes detected in 'drizzle' directory."
+            echo "::set-output name=changes::true"
+          fi
+
   Migrate-Database:
+    needs: Check-Drizzle-Changes
+    if: needs.Check-Drizzle-Changes.outputs.changes == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -34,7 +53,8 @@ jobs:
         run: yarn db:migrate
 
   Deploy-Production:
-    needs: Migrate-Database
+    needs: [Migrate-Database, Check-Drizzle-Changes]
+    if: always() && needs.Check-Drizzle-Changes.outputs.changes == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
