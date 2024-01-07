@@ -6,9 +6,7 @@ import { openApiDocument } from "~/server/api/openapi";
 function sanitiseSpec(spec: typeof openApiDocument): typeof openApiDocument {
   return JSON.parse(JSON.stringify(spec)) as typeof openApiDocument;
 }
-const SwaggerUI = dynamic<{
-  spec: typeof openApiDocument;
-}>(import("swagger-ui-react"), { ssr: false });
+const SwaggerUI = dynamic(import("swagger-ui-react"), { ssr: false });
 
 function ApiDoc({ spec }: InferGetStaticPropsType<typeof getStaticProps>) {
   return <SwaggerUI spec={spec} />;
