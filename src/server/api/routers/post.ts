@@ -28,6 +28,7 @@ export const postRouter = createTRPCRouter({
       openapi: {
         method: "POST",
         path: "/post",
+        protect: true,
       },
     })
     .input(z.object({ name: z.string().min(1) }))

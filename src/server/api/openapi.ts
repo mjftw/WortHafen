@@ -4,5 +4,5 @@ import { appRouter } from "./root";
 export const openApiDocument = generateOpenApiDocument(appRouter, {
   title: "WortHafen API",
   version: "1.0.0",
-  baseUrl: "http://localhost:3000",
+  baseUrl: "/api",
 });
