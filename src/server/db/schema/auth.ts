@@ -14,7 +14,7 @@ export const users = authTable("users", {
   id: text("id")
     .notNull()
     .primaryKey()
-    .$default(() => sql`uuid_generate_v4()`),
+    .$default(() => sql`gen_random_uuid()`),
   name: text("name"),
   email: text("email").notNull(),
   emailVerified: timestamp("email_verified"),

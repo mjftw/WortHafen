@@ -9,6 +9,7 @@ import GoogleProvider from "next-auth/providers/google";
 import { env } from "~/env";
 import { type Database, getDb } from "~/server/db";
 import { pgDrizzleAdapter } from "~/server/db/drizzle-adaptor";
+import type { APIUser } from "~/server/api/apiAuth";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -18,9 +19,11 @@ import { pgDrizzleAdapter } from "~/server/db/drizzle-adaptor";
  */
 declare module "next-auth" {
   interface Session extends DefaultSession {
-    user: {
-      id: string;
-    } & DefaultSession["user"];
+    user:
+      | ({
+          id: string;
+        } & DefaultSession["user"])
+      | APIUser;
   }
 
   // interface User {

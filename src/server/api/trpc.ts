@@ -7,6 +7,7 @@ import type { OpenApiMeta } from "trpc-openapi";
 
 import { getServerAuthSession } from "~/server/auth";
 import { getDb } from "~/server/db";
+import { decodeJWT } from "~/server/api/apiAuth";
 
 /**
  * 1. CONTEXT
@@ -38,6 +39,32 @@ const createInnerTRPCContext = async (opts: CreateContextOptions) => {
   };
 };
 
+async function buildUserSession(opts: CreateNextContextOptions) {
+  return await getServerAuthSession(opts);
+}
+
+async function buildApiSession(
+  opts: CreateNextContextOptions,
+): Promise<Session | null> {
+  const { req } = opts;
+  const token = req.headers.authorization?.replace("Bearer ", "");
+
+  if (!token) {
+    return null;
+  }
+
+  const apiSession = decodeJWT(token);
+
+  if (!apiSession) {
+    return null;
+  }
+
+  return {
+    user: apiSession.user,
+    expires: apiSession.expires,
+  };
+}
+
 /**
  * This is the actual context you will use in your router. It will be used to process every request
  * that goes through your tRPC endpoint.
@@ -48,7 +75,9 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   const { req, res } = opts;
 
   // Get the session from the server using the getServerSession wrapper function
-  const session = await getServerAuthSession({ req, res });
+  const session =
+    (await buildUserSession({ req, res })) ??
+    (await buildApiSession({ req, res }));
 
   return createInnerTRPCContext({
     session,
