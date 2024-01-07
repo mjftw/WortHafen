@@ -6,11 +6,15 @@ import {
   pgTableCreator,
 } from "drizzle-orm/pg-core";
 import type { AdapterAccount } from "@auth/core/adapters";
+import { sql } from "drizzle-orm";
 
 const authTable = pgTableCreator((name) => `auth_${name}`);
 
 export const users = authTable("users", {
-  id: text("id").notNull().primaryKey(),
+  id: text("id")
+    .notNull()
+    .primaryKey()
+    .$default(() => sql`uuid_generate_v4()`),
   name: text("name"),
   email: text("email").notNull(),
   emailVerified: timestamp("email_verified"),

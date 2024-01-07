@@ -24,7 +24,7 @@ export function pgDrizzleAdapter(
     async createUser(user): Promise<schema.User> {
       return await client
         .insert(users)
-        .values({ ...user, id: crypto.randomUUID() })
+        .values(user)
         .returning()
         .then((res) => {
           const user = res[0];

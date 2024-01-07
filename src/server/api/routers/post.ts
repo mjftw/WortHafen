@@ -13,6 +13,7 @@ export const postRouter = createTRPCRouter({
       openapi: {
         method: "GET",
         path: "/hello",
+        tags: ["Example"],
       },
     })
     .input(z.object({ text: z.string() }))
@@ -28,6 +29,7 @@ export const postRouter = createTRPCRouter({
       openapi: {
         method: "POST",
         path: "/post",
+        tags: ["Example"],
         protect: true,
       },
     })
