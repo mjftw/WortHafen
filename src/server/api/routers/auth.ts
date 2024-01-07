@@ -19,7 +19,7 @@ export const authRouter = createTRPCRouter({
         protect: true,
       },
     })
-    .input(z.object({}))
+    .input(z.undefined())
     .output(clientCredentialsSchema)
     .mutation(async ({ ctx }) => {
       const clientSecret = newClientSecret();

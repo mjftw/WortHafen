@@ -14,7 +14,9 @@ export const words = table("words", {
   inGerman: text("in_german").notNull(),
   inEnglish: text("in_english").notNull(),
   exampleUsage: text("example_usage"),
-  addedByUserId: text("added_by_user_id").references(() => users.id),
+  addedByUserId: text("added_by_user_id")
+    .notNull()
+    .references(() => users.id),
   createdAt: createdAt(),
   updatedAt: updatedAt(),
 });

@@ -8,6 +8,7 @@ import {
 } from "~/server/api/trpc";
 import {
   newWordSchema,
+  usersWords,
   wordSchema,
   words,
 } from "~/server/db/schema/dictionary";
@@ -67,7 +68,13 @@ export const dictionaryRouter = createTRPCRouter({
           inGerman: input.inGerman,
           inEnglish: input.inEnglish,
           exampleUsage: input.exampleUsage,
-          addedByUserId: ctx.session.user.id as string | undefined,
+          addedByUserId: ctx.session.user.id,
+        })
+        .onConflictDoUpdate({
+          set: {
+            exampleUsage: input.exampleUsage,
+          },
+          target: [words.inGerman, words.inEnglish],
         })
         .returning();
 
@@ -75,6 +82,43 @@ export const dictionaryRouter = createTRPCRouter({
         throw new Error("Failed to create dictionary entry");
       }
 
+      await ctx.db.insert(usersWords).values({
+        userId: ctx.session.user.id,
+        wordId: word.id,
+      });
+
       return word;
+    }),
+  myWords: protectedProcedure
+    .meta({
+      openapi: {
+        method: "GET",
+        path: "/mywords",
+        tags: ["Dictionary"],
+        protect: true,
+      },
+    })
+    .input(z.undefined())
+    .output(
+      z.array(
+        z.object({
+          inGerman: z.string(),
+          inEnglish: z.string(),
+          exampleUsage: z.string().nullable(),
+        }),
+      ),
+    )
+    .query(async ({ ctx }) => {
+      const found = await ctx.db
+        .select({
+          inGerman: words.inGerman,
+          inEnglish: words.inEnglish,
+          exampleUsage: words.exampleUsage,
+        })
+        .from(usersWords)
+        .innerJoin(words, eq(words.id, usersWords.wordId))
+        .where(eq(usersWords.userId, ctx.session.user.id));
+
+      return found;
     }),
 });
