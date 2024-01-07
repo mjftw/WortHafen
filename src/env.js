@@ -48,7 +48,8 @@ export const env = createEnv({
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     API_JWT_SECRET: process.env.API_JWT_SECRET,
-    OWN_SERVER_URL: process.env.OWN_SERVER_URL ?? process.env.VERCEL_URL,
+    OWN_SERVER_URL:
+      process.env.OWN_SERVER_URL ?? `https://${process.env.VERCEL_URL}`,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     POSTGRES_USE_SSL: process.env.POSTGRES_USE_SSL == "true",
