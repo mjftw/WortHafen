@@ -13,18 +13,23 @@ jobs:
   Check-Drizzle-Changes:
     runs-on: ubuntu-latest
     outputs:
-      changes: ${{ steps.set-output.outputs.changes }}
+      changes: ${{ steps.check-changes.outputs.changes }}
     steps:
       - uses: actions/checkout@v2
-      - id: set-output
+      - id: check-changes
         run: |
           echo "Checking for changes in the 'drizzle' directory..."
-          if git diff --quiet HEAD^ HEAD -- drizzle; then
-            echo "No changes in 'drizzle' directory."
-            echo "::set-output name=changes::false"
+          if git rev-parse HEAD^ &> /dev/null; then
+            if git diff --quiet HEAD^ HEAD -- drizzle; then
+              echo "No changes in 'drizzle' directory."
+              echo "changes=false" >> $GITHUB_ENV
+            else
+              echo "Changes detected in 'drizzle' directory."
+              echo "changes=true" >> $GITHUB_ENV
+            fi
           else
-            echo "Changes detected in 'drizzle' directory."
-            echo "::set-output name=changes::true"
+            echo "This is the first commit, no previous history."
+            echo "changes=true" >> $GITHUB_ENV
           fi
 
   Migrate-Database:
