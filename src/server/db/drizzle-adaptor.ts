@@ -1,8 +1,8 @@
 import { and, eq } from "drizzle-orm";
 import { type PgDatabase } from "drizzle-orm/pg-core";
-import type { Adapter, AdapterAccount } from "@auth/core/adapters";
 
 import * as schema from "./schema";
+import type { Adapter } from "next-auth/adapters";
 
 export function createTables() {
   const users = schema.users;
@@ -97,7 +97,7 @@ export function pgDrizzleAdapter(
         .returning()
         .then((res) => res[0]);
     },
-    async linkAccount(rawAccount): Promise<AdapterAccount> {
+    async linkAccount(rawAccount) {
       const updatedAccount = await client
         .insert(accounts)
         .values(rawAccount)
@@ -113,11 +113,12 @@ export function pgDrizzleAdapter(
 
       // Drizzle will return `null` for fields that are not defined.
       // However, the return type is expecting `undefined`.
-      const account: AdapterAccount = {
+      const account = {
         ...updatedAccount,
         access_token: updatedAccount.access_token ?? undefined,
-        token_type: updatedAccount.token_type as "bearer" | "dpop" ?? undefined,
-        id_token: updatedAccount.id_token ?? undefined ,
+        token_type:
+          (updatedAccount.token_type as "bearer" | "dpop") ?? undefined,
+        id_token: updatedAccount.id_token ?? undefined,
         refresh_token: updatedAccount.refresh_token ?? undefined,
         scope: updatedAccount.scope ?? undefined,
         expires_at: updatedAccount.expires_at ?? undefined,
