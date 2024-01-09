@@ -36,7 +36,16 @@ async function authenticatedFlow(
   session: Session,
   redirectUrl: URL,
 ) {
-  const authorizationToken = await createAuthorizationToken(session.user.id);
+  const authorizationTokenResult = await createAuthorizationToken(
+    session.user.id,
+  );
+  if (authorizationTokenResult.err) {
+    console.error(authorizationTokenResult.val);
+    res.status(500).send("Internal server error");
+    return;
+  }
+  const authorizationToken = authorizationTokenResult.val;
+
   redirectUrl.searchParams.set("code", authorizationToken.code);
 
   // Redirect to the client's callback URL with the authorization code

@@ -6,9 +6,8 @@ import { ZodError } from "zod";
 import type { OpenApiMeta } from "trpc-openapi";
 
 import { getServerAuthSession } from "~/server/auth";
-import { Database, getDb } from "~/server/db";
-import { decodeAccessJWT, decodeJWT } from "~/server/api/oauth";
-import { NextApiRequest } from "next";
+import { type Database, getDb } from "~/server/db";
+import { decodeAccessJWT } from "~/server/api/oauth";
 import { Err, Ok, Result } from "ts-results";
 
 /**
