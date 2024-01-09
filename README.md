@@ -2,6 +2,8 @@
 
 A place to catalogue the German words I have learnt
 
+![1704834715037](image/README/worthafen_logo.png)
+
 ## Developer info
 
 ### Running locally
