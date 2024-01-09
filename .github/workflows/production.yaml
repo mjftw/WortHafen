@@ -10,31 +10,7 @@ on:
       - main
 
 jobs:
-  Check-Drizzle-Changes:
-    runs-on: ubuntu-latest
-    outputs:
-      changes: ${{ steps.check-changes.outputs.changes }}
-    steps:
-      - uses: actions/checkout@v2
-      - id: check-changes
-        run: |
-          echo "Checking for changes in the 'drizzle' directory..."
-          if git rev-parse HEAD^ &> /dev/null; then
-            if git diff --quiet HEAD^ HEAD -- drizzle; then
-              echo "No changes in 'drizzle' directory."
-              echo "changes=false" >> $GITHUB_ENV
-            else
-              echo "Changes detected in 'drizzle' directory."
-              echo "changes=true" >> $GITHUB_ENV
-            fi
-          else
-            echo "This is the first commit, no previous history."
-            echo "changes=true" >> $GITHUB_ENV
-          fi
-
   Migrate-Database:
-    needs: Check-Drizzle-Changes
-    if: needs.Check-Drizzle-Changes.outputs.changes == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -58,8 +34,7 @@ jobs:
         run: yarn db:migrate
 
   Deploy-Production:
-    needs: [Migrate-Database, Check-Drizzle-Changes]
-    if: always() && needs.Check-Drizzle-Changes.outputs.changes == 'true'
+    needs: [Migrate-Database]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
