@@ -7,8 +7,9 @@ import type { OpenApiMeta } from "trpc-openapi";
 
 import { getServerAuthSession } from "~/server/auth";
 import { Database, getDb } from "~/server/db";
-import { decodeJWT } from "~/server/api/apiAuth";
+import { decodeAccessJWT, decodeJWT } from "~/server/api/oauth";
 import { NextApiRequest } from "next";
+import { Err, Ok, Result } from "ts-results";
 
 /**
  * 1. CONTEXT
@@ -40,41 +41,44 @@ const createInnerTRPCContext = async (opts: CreateContextOptions) => {
   };
 };
 
-async function buildUserSession(opts: CreateNextContextOptions) {
-  return await getServerAuthSession(opts);
+async function buildUserSession(
+  opts: CreateNextContextOptions,
+): Promise<Result<Session | null, Error>> {
+  return await Result.wrapAsync(() => getServerAuthSession(opts));
 }
 
 async function buildApiSession(
-  req: NextApiRequest,
+  opts: CreateNextContextOptions,
   db: Database,
-): Promise<Session | null> {
+): Promise<Result<Session, Error>> {
+  const { req } = opts;
   const token = req.headers.authorization?.replace("Bearer ", "");
 
   if (!token) {
-    console.debug("No authorization header");
-    return null;
+    return Err(new Error("No authorization header"));
   }
 
-  const apiSession = decodeJWT(token);
+  const accessSessionResult = decodeAccessJWT(token);
 
-  if (!apiSession) {
-    console.debug("Failed to decode JWT");
-    return null;
+  if (accessSessionResult.err) {
+    return Err(
+      new Error("Failed to decode JWT", { cause: accessSessionResult.val }),
+    );
   }
+  const accessSession = accessSessionResult.val;
 
   const user = await db.query.users.findFirst({
-    where: (users, { eq }) => eq(users.id, apiSession.user.clientId),
+    where: (users, { eq }) => eq(users.id, accessSession.token.userId),
   });
 
   if (!user) {
-    console.debug("User not found");
-    return null;
+    return Err(new Error("User not found"));
   }
 
-  return {
+  return Ok({
     user,
-    expires: apiSession.expires,
-  };
+    expires: accessSession.expires,
+  });
 }
 
 /**
@@ -84,12 +88,12 @@ async function buildApiSession(
  * @see https://trpc.io/docs/context
  */
 export const createTRPCContext = async (opts: CreateNextContextOptions) => {
-  const { req, res } = opts;
   const db = await getDb();
 
-  // Get the session from the server using the getServerSession wrapper function
-  const session =
-    (await buildUserSession({ req, res })) ?? (await buildApiSession(req, db));
+  const sessionResult =
+    (await buildUserSession(opts)) ?? (await buildApiSession(opts, db));
+
+  const session = sessionResult.unwrap();
 
   return createInnerTRPCContext({
     session,

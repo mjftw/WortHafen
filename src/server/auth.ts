@@ -9,7 +9,7 @@ import GoogleProvider from "next-auth/providers/google";
 import { env } from "~/env";
 import { type Database, getDb } from "~/server/db";
 import { pgDrizzleAdapter } from "~/server/db/drizzle-adaptor";
-import type { APIUser } from "~/server/api/apiAuth";
+import type { APIUser } from "~/server/api/oauth";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`

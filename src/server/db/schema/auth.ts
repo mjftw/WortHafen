@@ -35,7 +35,7 @@ export const accounts = authTable(
     provider: text("provider").notNull(),
     providerAccountId: text("provider_account_id").notNull(),
     refresh_token: text("refresh_token"),
-    access_token: text("access_token"),
+    authorization_token: text("authorization_token"),
     expires_at: integer("expires_at"),
     token_type: text("token_type"),
     scope: text("scope"),
@@ -78,14 +78,13 @@ export const verificationTokens = authTable(
 export type VerificationToken = typeof verificationTokens.$inferSelect;
 export type NewVerificationToken = typeof verificationTokens.$inferInsert;
 
-export const clientCredentials = authTable("client_credentials", {
-  clientId: text("client_id")
+export const authorizationTokens = authTable("authorization_tokens", {
+  code: text("code").notNull().primaryKey(),
+  userId: text("user_id")
     .notNull()
-    .references(() => users.id)
-    .primaryKey(),
-  clientSecret: text("client_secret").notNull(),
+    .references(() => users.id, { onDelete: "cascade" }),
+  expiresAt: timestamp("expires_at").notNull(),
 });
 
-export type ClientCredentials = typeof clientCredentials.$inferSelect;
-export type NewClientCredentials = typeof clientCredentials.$inferInsert;
-export const clientCredentialsSchema = createSelectSchema(clientCredentials);
+export type AuthorizationToken = typeof authorizationTokens.$inferSelect;
+export type NewAuthorizationToken = typeof authorizationTokens.$inferInsert;
