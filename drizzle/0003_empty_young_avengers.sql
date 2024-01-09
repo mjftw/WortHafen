@@ -1,0 +1,1 @@
+ALTER TABLE "auth_accounts" RENAME COLUMN "authorization_token" TO "access_token";

@@ -35,7 +35,7 @@ export const accounts = authTable(
     provider: text("provider").notNull(),
     providerAccountId: text("provider_account_id").notNull(),
     refresh_token: text("refresh_token"),
-    authorization_token: text("authorization_token"),
+    access_token: text("access_token"),
     expires_at: integer("expires_at"),
     token_type: text("token_type"),
     scope: text("scope"),
