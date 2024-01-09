@@ -34,7 +34,7 @@ jobs:
 
   Migrate-Database:
     needs: Check-Drizzle-Changes
-    if: always() && needs.Check-Drizzle-Changes.outputs.changes == 'true'
+    if: needs.Check-Drizzle-Changes.outputs.changes == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
