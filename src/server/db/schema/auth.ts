@@ -7,7 +7,6 @@ import {
 } from "drizzle-orm/pg-core";
 import type { AdapterAccount } from "@auth/core/adapters";
 import { sql } from "drizzle-orm";
-import { createSelectSchema } from "drizzle-zod";
 
 const authTable = pgTableCreator((name) => `auth_${name}`);
 

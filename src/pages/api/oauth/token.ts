@@ -4,10 +4,9 @@ import { authorizationTokens } from "~/server/db/schema";
 import { encodeAccessJWT, type AccessToken } from "~/server/api/oauth";
 import { eq } from "drizzle-orm";
 
-export default async function authorize(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+export default async function token(req: NextApiRequest, res: NextApiResponse) {
+  console.log("token request: ", JSON.stringify(req.body, null, 2));
+
   // TODO: Make this less rubbish
   // Also need to check that this is how the code is sent, not in query params or something
   const { code } = req.body as { code: string };
